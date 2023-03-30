@@ -3,29 +3,26 @@
 #include <memory>
 #include <string>
 #include <vector>
-                //Reference: Nodo que apunta a otro BehaviorTree y que devuelve el resultado del status de ese arbol
+
+//BehaviorTree
 //Action/Base
 //Condition  
-//Control Flow
+//Control Flow:
     //Selector
-    //Sequence
-                //Decorator
-                    //Inverter
-                    //Succeeder
-                    //Failer
-                    //Repeater
-                    //Count.based limit decorator
-                    //Time.based limit decorator
+    //Sequence           
+//Decorator:
+    //Inverter
+    //Succeeder
+    //Failer
+    //Repeater
 
-//los update deberian estar en privado en vez de en public?
 
 enum class NodeStatus
 {
 	Default,
 	Success,
 	Failure,
-	Running,
-    Failure
+	Running
 };
 
 //Base node and action node
@@ -34,16 +31,16 @@ class BehaviorTreeNode
 public:
 
 	virtual ~BehaviorTreeNode() {};
-	virtual NodeStatus run() = 0;
-	//virtual void resetNode() {}
+	virtual NodeStatus Run() = 0;
+	virtual void ResetNode() {}
 
-    NodeStatus tickNode()
+    NodeStatus TickNode()
     {
-      /*  if (currentStatus != NodeStatus::Running) {
-            resetNode();
-        }*/
+        if (currentStatus != NodeStatus::Running) {
+            ResetNode();
+        }
 
-        currentStatus = run();
+        currentStatus = Run();
 
         return currentStatus;
     }
@@ -55,6 +52,20 @@ protected:
 
 };
 
+class BehaviorTree : public BehaviorTreeNode
+{
+public:
+    BehaviorTree() {}
+    BehaviorTree(const std::shared_ptr<BehaviorTreeNode> &rootNode) : BehaviorTree() { root = rootNode; }
+    
+    NodeStatus Run() { return root->TickNode(); }
+
+    void SetRoot(const std::shared_ptr<BehaviorTreeNode> node) { root = node; }
+
+private:
+    std::shared_ptr<BehaviorTreeNode> root;
+};
+
 //The Condition Node represents a Boolean test that can evaluate to either true or false
 //If the test evaluates to true, the node returns a SUCCESS status code, and if it evaluates 
 //to false, it returns a FAILURE code.
@@ -64,7 +75,7 @@ public:
 
     virtual ~ConditionNode() {}
 
-    NodeStatus run() override
+    NodeStatus Run() override
     {
         if (test)
         {
@@ -94,18 +105,18 @@ public:
 
     virtual ~SelectorNode() {};
 
-    void addChildren(std::shared_ptr<BehaviorTreeNode> child)
+    void AddChildren(std::shared_ptr<BehaviorTreeNode> child)
     {
         children.push_back(child);
     }
 
-    bool isEmpty() const { return children.empty(); }
+    bool IsEmpty() const { return children.empty(); }
 
-    NodeStatus run() override
+    NodeStatus Run() override
     {
         for (auto& child : children) {
            
-            NodeStatus status = child->tickNode(); 
+            NodeStatus status = child->TickNode(); 
             
             if (status == NodeStatus::Success)
             {
@@ -132,18 +143,18 @@ class SequenceNode : public BehaviorTreeNode
 {
     virtual ~SequenceNode() {};
 
-    void addChildren(std::shared_ptr<BehaviorTreeNode> child)
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
     {
         children.push_back(child);
     }
 
-    bool isEmpty() const { return children.empty(); }
+    bool IsEmpty() const { return children.empty(); }
 
-    NodeStatus run() override
+    NodeStatus Run() override
     {
         for (auto& child : children) {
 
-            NodeStatus status = child->tickNode();
+            NodeStatus status = child->TickNode();
 
             if (status == NodeStatus::Failure)
             {
@@ -156,4 +167,96 @@ class SequenceNode : public BehaviorTreeNode
 
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
+};
+
+//A decorator, as a wrapped component, affects exactly one componentand modifies its processing logic
+class DecoratorNode : public BehaviorTreeNode
+{
+public:
+
+    virtual ~DecoratorNode() {}
+
+    void SetChild(std::shared_ptr<BehaviorTreeNode> node)
+    { 
+        child = node;
+    }
+
+    bool HasChild() const { return child != nullptr; }
+
+protected:
+    std::shared_ptr<BehaviorTreeNode> child;
+};
+
+
+//An Inverter decorator reverses the outcome of the behavior tree node it is attached to.
+//If the wrapped node returns SUCCESS, the inverter will return FAILURE.
+//If the wrapped node returns FAILURE, the inverter will return SUCCESS.
+class Inverter : public DecoratorNode
+{
+public:
+
+    NodeStatus Run() override
+    {
+        NodeStatus status = child->TickNode();
+
+        if (status == NodeStatus::Success) {
+            return NodeStatus::Failure;
+        }
+        else if (status == NodeStatus::Failure) {
+            return NodeStatus::Success;
+        }
+ 
+        return status;
+    }
+
+};
+
+//The Failer decorator always returns a failure status code, no matter what the child component's result is.
+class Failer : public DecoratorNode
+{
+public:
+    NodeStatus Run() override
+    {
+        child->TickNode();
+        return NodeStatus::Failure;
+    }
+};
+
+//The Succeeder decorator always returns a success status code, regardless of the child component's result.
+class Succeeder : public DecoratorNode
+{
+public:
+    NodeStatus Run() override
+    {
+        child->TickNode();
+        return NodeStatus::Success;
+    }
+};
+
+//The Loop decorator repeatedly executes its child node until the child node returns a SUCCESS state, 
+//either infinitely or up to a specified limit.
+class Repeater : public DecoratorNode
+{
+public:
+    Repeater(int limit = 0) : limit(limit) {}
+
+    void ResetNode() override
+    {
+        counter = 0;
+    }
+
+    NodeStatus Run() override
+    {
+        child->TickNode();
+
+        if (limit > 0 && ++counter == limit) {
+            return NodeStatus::Success;
+        }
+
+        return NodeStatus::Running;
+    }
+
+protected:
+    int limit;
+    int counter = 0;
 };

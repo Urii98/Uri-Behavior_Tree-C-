@@ -15,11 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UriBehaviorTree.cpp">
-      <Filter>Archivos de recursos</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="UriBehaviorTree.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>

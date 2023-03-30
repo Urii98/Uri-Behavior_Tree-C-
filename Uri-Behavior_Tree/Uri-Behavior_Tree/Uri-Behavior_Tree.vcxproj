@@ -139,9 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="UriBehaviorTree.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="UriBehaviorTree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
