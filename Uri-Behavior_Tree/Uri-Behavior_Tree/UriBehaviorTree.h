@@ -7,19 +7,19 @@
 #include <numeric>
 
 //BehaviorTree
-//Action/Base
-//Condition  
+//Action/Base  : Funciona
+//Condition  :Funciona
 //Control Flow:
-    //Selector
-    //Sequence         
-    //RandomUniformDistribution
-    //WeightedRandomDistribution   
+    //Selector : Funciona
+    //Sequence : Funciona
+    //RandomUniformDistribution : Funciona
+    //WeightedRandomDistribution : Funciona
 //Decorator:
-    //Inverter
-    //Succeeder
-    //Failer
-    //Repeater
-    //RandomBernoulliDistribution
+    //Inverter : Funciona
+    //Succeeder : Funciona
+    //Failer : Funciona
+    //Repeater : Funciona
+    //RandomBernoulliDistribution : Funciona
 
 
 //DUDAS
@@ -106,6 +106,8 @@ public:
             currentStatus = NodeStatus::Failure;
         }
 
+        return NodeStatus::Success;
+
     }
 
 
@@ -116,7 +118,7 @@ public:
 };
 
 
-//A Selector Noode examines its child components in sequence from left to right, 
+//A Selector Node examines its child components in sequence from left to right, 
 //returning a SUCCESS code immediately when one of its children returns SUCCESS.
 //If a child returns a FAILURE code, the selector continues examining its remaining children.
 //If all of the selector's children return a FAILURE code, the selector returns a FAILURE code itself. 
@@ -126,7 +128,7 @@ public:
 
     virtual ~SelectorNode() {};
 
-    void AddChildren(std::shared_ptr<BehaviorTreeNode> child)
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
     {
         children.push_back(child);
     }
@@ -265,6 +267,11 @@ public:
 
     NodeStatus Run() override
     {
+        // Check that the sum of the weights equals 1.0
+        float sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
+        assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
+
+
         // Select a random child node based on the weights
         int index = m_distribution(m_eng);
         std::shared_ptr<BehaviorTreeNode> child = children[index];
@@ -351,27 +358,26 @@ public:
 class Repeater : public DecoratorNode
 {
 public:
-    Repeater(int limit = 0) : limit(limit) {}
+    Repeater(int num_iterations) : num_iterations(num_iterations) {}
 
     void ResetNode() override
     {
-        counter = 0;
+        current_iteration = 0;
     }
 
     NodeStatus Run() override
     {
-        child->TickNode();
-
-        if (limit > 0 && ++counter == limit) {
-            return NodeStatus::Success;
+        while (current_iteration < num_iterations) {
+            child->TickNode();
+            current_iteration++;
         }
 
-        return NodeStatus::Running;
+        return NodeStatus::Success;
     }
 
 protected:
-    int limit;
-    int counter = 0;
+    int num_iterations;
+    int current_iteration = 0;
 };
 
 
