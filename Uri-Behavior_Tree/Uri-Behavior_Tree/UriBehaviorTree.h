@@ -1,21 +1,34 @@
 #pragma once
 #include <iostream>
 #include <memory>
-#include <string>
 #include <vector>
+#include <random>
+#include <cassert>
+#include <numeric>
 
 //BehaviorTree
 //Action/Base
 //Condition  
 //Control Flow:
     //Selector
-    //Sequence           
+    //Sequence         
+    //RandomUniformDistribution
+    //WeightedRandomDistribution   
 //Decorator:
     //Inverter
     //Succeeder
     //Failer
     //Repeater
+    //RandomBernoulliDistribution
 
+
+//DUDAS
+/*
+
+    ¿¿¿ child->TickNode() o child.Get()->TickNode() ???
+
+    -probar que pasa si le pasas a uno de bernoulli una probablity fuera del rango de 0 a 1
+*/
 
 enum class NodeStatus
 {
@@ -25,7 +38,9 @@ enum class NodeStatus
 	Running
 };
 
-//Base node and action node
+//BehaviorTreeNode class is the base class for all behavior tree nodes.
+//It defines a basic interface for running a behavior tree nodeand getting its current status.
+//The class is abstract, which means that it cannot be instantiated directlyand must be subclassed to create specific types of nodes.
 class BehaviorTreeNode 
 {
 public:
@@ -147,6 +162,7 @@ private:
 //If all nodes succeed, the Sequence Node returns a success state.
 class SequenceNode : public BehaviorTreeNode
 {
+public:
     virtual ~SequenceNode() {};
 
     void AddChild(std::shared_ptr<BehaviorTreeNode> child)
@@ -175,6 +191,93 @@ private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
 };
 
+
+//RandomUniformDistribution randomly selects one of its children to execute,
+//with each child having an equal probability of being chosen.The selection
+//is made using a uniform distribution.
+class RandomUniformDistribution : public BehaviorTreeNode
+{
+public:
+    RandomUniformDistribution(int numChildren) : m_distribution(0, numChildren - 1)
+    {
+        m_eng = std::default_random_engine(std::time(0));
+    }
+
+    virtual ~RandomUniformDistribution() {};
+
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
+    {
+        children.push_back(child);
+    }
+
+    bool IsEmpty() const { return children.empty(); }
+
+    NodeStatus Run() override
+    {
+
+        int index = m_distribution(m_eng);
+        std::shared_ptr<BehaviorTreeNode> child = children[index];
+
+        return child->TickNode();
+    }
+
+
+private:
+    std::vector<std::shared_ptr<BehaviorTreeNode>> children;
+    std::uniform_int_distribution<int> m_distribution;
+    std::default_random_engine m_eng;
+
+};
+
+
+//WeightedRandomDistribution selects a child node to execute based on a weighted random distribution.
+//The user is required to provide a vector of weights that will be used to initialize the discrete distribution.
+//The sum of the weights will be checked to ensure it equals 1.0.Then, when children are added to the distribution, 
+//the weights will be added to the m_weights vector, but a new discrete distribution will not be created since the 
+//initialization was done in the constructor.
+class WeightedRandomDistribution : public BehaviorTreeNode
+{
+public:
+    //Constructor that takes a vector of weights to be used in the distribution.
+    //The sum of the weights must be 1.0.
+    WeightedRandomDistribution(std::vector<float> weights) :
+        m_distribution(weights.begin(), weights.end())
+    {
+        m_eng = std::default_random_engine(std::time(0));
+
+        // Check that the sum of the weights equals 1.0
+        float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
+        assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
+
+    }
+
+    virtual ~WeightedRandomDistribution() {};
+
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight)
+    {
+        children.push_back(child);
+        m_weights.push_back(weight);
+        // Update the distribution with the new weights
+        m_distribution = std::discrete_distribution<int>(m_weights.begin(), m_weights.end());
+    }
+
+    bool IsEmpty() const { return children.empty(); }
+
+    NodeStatus Run() override
+    {
+        // Select a random child node based on the weights
+        int index = m_distribution(m_eng);
+        std::shared_ptr<BehaviorTreeNode> child = children[index];
+
+        return child->TickNode();
+    }
+
+private:
+    std::vector<std::shared_ptr<BehaviorTreeNode>> children;
+    std::vector<float> m_weights;
+    std::discrete_distribution<int> m_distribution;
+    std::default_random_engine m_eng;
+};
 
 //A decorator, as a wrapped component, affects exactly one componentand modifies its processing logic
 class DecoratorNode : public BehaviorTreeNode
@@ -269,5 +372,47 @@ public:
 protected:
     int limit;
     int counter = 0;
+};
+
+
+//RandomBernoulliDistribution represents a random Bernoulli distribution decorator node for use in behavior trees.
+//It checks if it has a child node and randomly executes it based on a given probability.
+class RandomBernoulliDistribution : public DecoratorNode
+{
+public:
+    RandomBernoulliDistribution() : m_probability(0.5) 
+    {
+        m_eng = std::default_random_engine(std::time(0));
+    }
+    RandomBernoulliDistribution(float probablity) : m_probability(probablity) 
+    {
+        assert(m_probability >= 0.0 && m_probability <= 1.0 && "Probability must be between 0 and 1");
+        m_eng = std::default_random_engine(std::time(0));
+    }
+
+    NodeStatus Run() override
+    {
+        assert(child && "RandomBernoulliDistribution: no child node");
+        
+        std::bernoulli_distribution bern_dist(m_probability);
+
+        bool output = bern_dist(m_eng);
+
+        if (output)
+        {
+            child->TickNode();
+            return NodeStatus::Success;
+        }
+        else
+        {
+            return NodeStatus::Failure;
+        }
+            
+
+    }
+
+private:
+    float m_probability;
+    std::default_random_engine m_eng;
 };
 
