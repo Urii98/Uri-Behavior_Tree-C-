@@ -52,6 +52,7 @@ protected:
 
 };
 
+
 //Each node in the tree is connected to other nodesand evaluated sequentially during tree execution, 
 //from the root to the leaves.The BehaviorTree class implements this structureand provides a method 
 //to run the treeand change the root of the tree as needed.
@@ -68,6 +69,7 @@ public:
 private:
     std::shared_ptr<BehaviorTreeNode> root;
 };
+
 
 //The Condition Node represents a Boolean test that can evaluate to either true or false
 //If the test evaluates to true, the node returns a SUCCESS status code, and if it evaluates 
@@ -97,6 +99,7 @@ public:
     //std::shared_ptr<BehaviorTreeNode> leftChildren; //trueChildren
     //std::shared_ptr<BehaviorTreeNode> rightChildren; //falseChildren
 };
+
 
 //A Selector Noode examines its child components in sequence from left to right, 
 //returning a SUCCESS code immediately when one of its children returns SUCCESS.
@@ -137,11 +140,11 @@ private:
   
 };
 
+
 //The Sequence Node executes its child nodes sequentially, one after the other.
 //If one of the nodes fails, the Sequence Node returns a failure stateand does not execute the remaining nodes.
 //If a node succeeds, the Sequence Node continues to call the remaining nodes in sequence.
 //If all nodes succeed, the Sequence Node returns a success state.
-
 class SequenceNode : public BehaviorTreeNode
 {
     virtual ~SequenceNode() {};
@@ -171,6 +174,7 @@ class SequenceNode : public BehaviorTreeNode
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
 };
+
 
 //A decorator, as a wrapped component, affects exactly one componentand modifies its processing logic
 class DecoratorNode : public BehaviorTreeNode
@@ -214,6 +218,7 @@ public:
 
 };
 
+
 //The Failer decorator always returns a failure status code, no matter what the child component's result is.
 class Failer : public DecoratorNode
 {
@@ -225,6 +230,7 @@ public:
     }
 };
 
+
 //The Succeeder decorator always returns a success status code, regardless of the child component's result.
 class Succeeder : public DecoratorNode
 {
@@ -235,6 +241,7 @@ public:
         return NodeStatus::Success;
     }
 };
+
 
 //The Loop decorator repeatedly executes its child node until the child node returns a SUCCESS state, 
 //either infinitely or up to a specified limit.
@@ -263,3 +270,4 @@ protected:
     int limit;
     int counter = 0;
 };
+
