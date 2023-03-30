@@ -52,6 +52,9 @@ protected:
 
 };
 
+//Each node in the tree is connected to other nodesand evaluated sequentially during tree execution, 
+//from the root to the leaves.The BehaviorTree class implements this structureand provides a method 
+//to run the treeand change the root of the tree as needed.
 class BehaviorTree : public BehaviorTreeNode
 {
 public:
