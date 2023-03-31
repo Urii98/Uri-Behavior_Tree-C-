@@ -25,10 +25,23 @@ public:
 	}
 };
 
+class MoveAway : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Move Away" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
 
 
 int main()
 {
+	auto selector = std::make_shared<SelectorNode>();
+	auto moveAway = std::make_shared<MoveAway>(); 
+
 	BehaviorTree tree;
 
 	auto heal = std::make_shared<Action>();
@@ -74,10 +87,14 @@ int main()
 	//uniform->AddChild(attack);
 	//tree.SetRoot(uniform);
 
-	weighted->AddChild(heal, 0.10);
-	weighted->AddChild(attack, 1.50);
-	tree.SetRoot(weighted);
+	//weighted->AddChild(heal, 0.10);
+	//weighted->AddChild(attack, 1.50);
+	//tree.SetRoot(weighted);
+
+
+
 	
+	//tree.SetRoot(weighted);
 	tree.Run();
 
 	//std::default_random_engine e(time(0));

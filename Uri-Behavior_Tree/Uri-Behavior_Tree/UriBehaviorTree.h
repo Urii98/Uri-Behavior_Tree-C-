@@ -118,6 +118,39 @@ public:
 };
 
 
+class SwitchConditionNode : public BehaviorTreeNode
+{
+public:
+    SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right) :
+        leftChild(left),
+        rightChild(right)
+    {}
+    
+    virtual ~SwitchConditionNode() {}
+    
+    NodeStatus Run() override
+    {
+        if (cond)
+        {
+            return leftChild->TickNode();
+        }
+        else
+        {
+            return rightChild->TickNode();
+        }
+
+        return NodeStatus::Failure;
+
+    }
+
+    void SetCondition(bool cond) { this->cond = cond; }
+
+public:
+    bool cond = false;
+    std::shared_ptr<BehaviorTreeNode> leftChild; //trueChildren
+    std::shared_ptr<BehaviorTreeNode> rightChild; //falseChildren
+};
+
 //A Selector Node examines its child components in sequence from left to right, 
 //returning a SUCCESS code immediately when one of its children returns SUCCESS.
 //If a child returns a FAILURE code, the selector continues examining its remaining children.
