@@ -35,27 +35,75 @@ public:
 	}
 };
 
+class TripleStab : public BehaviorTreeNode
+{
+	NodeStatus Run() override
+	{
+		std::cout << "Triple Stab" << std::endl;
+		return NodeStatus::Success;
+	}
+};
 
+class NormalAttack : public BehaviorTreeNode
+{
+	NodeStatus Run() override
+	{
+		std::cout << "Normal Attack" << std::endl;
+		return NodeStatus::Success;
+	}
+};
 
+class GetCloser : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "GetCloser" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
+bool giveMeTrue()
+{
+	return true;
+}
 int main()
 {
-	auto selector = std::make_shared<SelectorNode>();
+	std::vector<float> a;
+	a.push_back(0.90);
+	a.push_back(0.10);
+
+
+	auto getCloser = std::make_shared<GetCloser>();
 	auto moveAway = std::make_shared<MoveAway>(); 
+	auto normalAttack = std::make_shared<NormalAttack>();
+	auto tripleStab = std::make_shared<TripleStab>();
 
-	BehaviorTree tree;
+	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>(a);
+	stabAbilityWeighted->AddChild(tripleStab, 0.25);
+	stabAbilityWeighted->AddChild(normalAttack, 0.75);
 
-	auto heal = std::make_shared<Action>();
-	auto attack = std::make_shared<ActionDos>();
-	auto cond = std::make_shared<ConditionNode>();
+	auto abilityUp = std::make_shared<SwitchConditionNode>(stabAbilityWeighted, normalAttack);
+	abilityUp->SetCondition(giveMeTrue());
+
+	auto isInsideRange = std::make_shared<SwitchConditionNode>(abilityUp, getCloser);
+	isInsideRange->SetCondition(giveMeTrue());
+
+	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
+	
+
+	BehaviorTree tree; 
+
+	tree.SetRoot(cheackHealth);
+	tree.Run();
+
+	//auto heal = std::make_shared<Action>();
+	//auto attack = std::make_shared<ActionDos>();
+	//auto cond = std::make_shared<ConditionNode>();
 	//auto seq = std::make_shared<SequenceNode>();
 	//auto uniform = std::make_shared<RandomUniformDistribution>(2);
-	std::vector<float> a;
-	a.push_back(0.40);
-	a.push_back(0.20);
-	a.push_back(0.10);
-	a.push_back(0.10);
-	a.push_back(0.20);
-	auto weighted = std::make_shared<WeightedRandomDistribution>(a);
+
+	//auto weighted = std::make_shared<WeightedRandomDistribution>(a);
 
 	//auto bernoulliWrap = std::make_shared<RandomBernoulliDistribution>(0.1);
 	//bernoulliWrap->SetChild(heal);
@@ -95,7 +143,7 @@ int main()
 
 	
 	//tree.SetRoot(weighted);
-	tree.Run();
+	//tree.Run();
 
 	//std::default_random_engine e(time(0));
 	//std::uniform_real_distribution<float> u(0,1);
