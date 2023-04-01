@@ -1,6 +1,39 @@
 #include "UriBehaviorTree.h"
 
 //BehaviorTreeNode
+
+std::string BehaviorTreeNode::statusToString(NodeStatus status)
+{
+    switch (status)
+    {
+    case NodeStatus::Default:
+        return "Default";
+        break;
+    case NodeStatus::Success:
+        return "Success";
+        break;
+    case NodeStatus::Failure:
+        return "Failure";
+        break;
+    case NodeStatus::Running:
+        return "Running";
+        break;
+    }
+}
+
+BehaviorTreeNode::BehaviorTreeNode()
+{};
+
+BehaviorTreeNode::~BehaviorTreeNode()
+{};
+
+bool BehaviorTreeNode::debug_enabled = false;
+
+void BehaviorTreeNode::SetDebugEnabled(bool value)
+{
+    debug_enabled = value;
+}
+
 NodeStatus BehaviorTreeNode::TickNode()
 {
 	if (currentStatus != NodeStatus::Running) {
@@ -9,13 +42,21 @@ NodeStatus BehaviorTreeNode::TickNode()
 
 	currentStatus = Run();
 
+    if (!nodeName.empty() && debug_enabled)
+    {
+        std::cout << nodeName << ": " << statusToString(currentStatus) << std::endl;
+    }
+    
 	return currentStatus;
 }
 
 
 
 //BehaviorTree
-BehaviorTree::BehaviorTree() {}
+BehaviorTree::BehaviorTree() 
+{
+    nodeName = "BehaviorTree";
+}
 
 BehaviorTree::BehaviorTree(const std::shared_ptr<BehaviorTreeNode>& rootNode) : root(rootNode) {}
 
@@ -32,6 +73,10 @@ void BehaviorTree::SetRoot(const std::shared_ptr<BehaviorTreeNode> node)
 
 
 //ConditionNode
+ConditionNode::ConditionNode() 
+{
+    nodeName = "ConditionNode";
+}
 ConditionNode::~ConditionNode() {}
 
 NodeStatus ConditionNode::Run()
@@ -54,7 +99,9 @@ NodeStatus ConditionNode::Run()
 SwitchConditionNode::SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right) :
     leftChild(left),
     rightChild(right)
-{}
+{
+    nodeName = "SwitchConditionNode";
+}
 
 SwitchConditionNode::~SwitchConditionNode()
 {}
@@ -63,11 +110,22 @@ NodeStatus SwitchConditionNode::Run()
 {
     if (cond)
     {
-        return leftChild->TickNode();
+        auto status = leftChild->TickNode();
+        if (debug_enabled)
+        {
+            std::cout << "Left Child Selected" << std::endl;
+        }
+        return status;
     }
     else
     {
-        return rightChild->TickNode();
+        auto status = rightChild->TickNode();
+        if (debug_enabled)
+        {
+            std::cout << "Right Child Selected" << std::endl;
+        }
+        return status;
+
     }
 }
 
@@ -79,6 +137,12 @@ void SwitchConditionNode::SetCondition(bool cond)
 
 
 //SelectorNode
+SelectorNode::SelectorNode()
+{
+    nodeName = "SelectorNode";
+}
+SelectorNode::~SelectorNode()
+{}
 void SelectorNode::AddChild(std::shared_ptr<BehaviorTreeNode> child)
 {
     children.push_back(child);
@@ -103,6 +167,12 @@ NodeStatus SelectorNode::Run()
 
 
 //SequenceNoce
+SequenceNode::SequenceNode()
+{
+    nodeName = "SequenceNode";
+}
+SequenceNode::~SequenceNode()
+{}
 void SequenceNode::AddChild(std::shared_ptr<BehaviorTreeNode> child)
 {
     children.push_back(child);
@@ -134,6 +204,8 @@ NodeStatus SequenceNode::Run()
 RandomUniformDistribution::RandomUniformDistribution(int numChildren) : m_distribution(0, numChildren - 1)
 {
     m_eng = std::default_random_engine(std::time(0));
+    nodeName = "RandomUniformDistribution";
+
 }
 
 RandomUniformDistribution::~RandomUniformDistribution() {}
@@ -168,6 +240,7 @@ WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weight
     float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
     assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
 
+    nodeName = "WeightedRandomDistribution";
 }
 
 WeightedRandomDistribution::~WeightedRandomDistribution() {}
@@ -194,6 +267,7 @@ NodeStatus WeightedRandomDistribution::Run()
 
     // Select a random child node based on the weights
     int index = m_distribution(m_eng);
+    //std::cout << "child " << index << " Selected" << std::endl;
     std::shared_ptr<BehaviorTreeNode> child = children[index];
 
     return child->TickNode();

@@ -23,15 +23,6 @@
     //Repeater : Funciona
     //RandomBernoulliDistribution : Funciona
 
-
-//DUDAS
-/*
-
-    ¿¿¿ child->TickNode() o child.Get()->TickNode() ???
-
-    -probar que pasa si le pasas a uno de bernoulli una probablity fuera del rango de 0 a 1
-*/
-
 enum class NodeStatus
 {
 	Default,
@@ -46,16 +37,29 @@ enum class NodeStatus
 
 class BehaviorTreeNode {
 public:
-    virtual ~BehaviorTreeNode() {};
+    BehaviorTreeNode();
+    virtual ~BehaviorTreeNode();
     virtual NodeStatus Run() = 0;
-    virtual void ResetNode() {}
 
     NodeStatus TickNode();
 
     NodeStatus GetStatus() const { return currentStatus; }
 
+    static void SetDebugEnabled(bool value);
+
+protected:
+    virtual void ResetNode() {}
+
 protected:
     NodeStatus currentStatus = NodeStatus::Default;
+    static bool debug_enabled;
+    
+private:
+    std::string statusToString(NodeStatus NodeStatus);
+    
+public:
+    
+    std::string nodeName;
 };
 
 
@@ -81,6 +85,7 @@ private:
 class ConditionNode : public BehaviorTreeNode
 {
 public:
+    ConditionNode();
     virtual ~ConditionNode();
     virtual NodeStatus Run() override;
 
@@ -111,7 +116,8 @@ private:
 class SelectorNode : public BehaviorTreeNode
 {
 public:
-    virtual ~SelectorNode() {}
+    SelectorNode();
+    virtual ~SelectorNode();
 
     void AddChild(std::shared_ptr<BehaviorTreeNode> child);
     bool IsEmpty() const;
@@ -129,7 +135,8 @@ private:
 class SequenceNode : public BehaviorTreeNode
 {
 public:
-    virtual ~SequenceNode() {};
+    SequenceNode();
+    virtual ~SequenceNode();
 
     void AddChild(std::shared_ptr<BehaviorTreeNode> child);
     bool IsEmpty() const;

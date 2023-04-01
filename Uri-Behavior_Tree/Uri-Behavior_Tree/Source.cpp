@@ -82,18 +82,23 @@ int main()
 	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>(a);
 	stabAbilityWeighted->AddChild(tripleStab, 0.25);
 	stabAbilityWeighted->AddChild(normalAttack, 0.75);
+	stabAbilityWeighted->nodeName = "stabAbilityWeighted";
 
 	auto abilityUp = std::make_shared<SwitchConditionNode>(stabAbilityWeighted, normalAttack);
 	abilityUp->SetCondition(giveMeTrue());
+	abilityUp->nodeName = "abilityUp";
 
 	auto isInsideRange = std::make_shared<SwitchConditionNode>(abilityUp, getCloser);
 	isInsideRange->SetCondition(giveMeTrue());
+	isInsideRange->nodeName = "isInsideRange";
 
 	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
+	cheackHealth->nodeName = "cheackHealth";
 	
 
 	BehaviorTree tree; 
 
+	tree.SetDebugEnabled(true);
 	tree.SetRoot(cheackHealth);
 	tree.Run();
 
