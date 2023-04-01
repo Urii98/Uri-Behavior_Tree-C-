@@ -105,8 +105,8 @@ public:
 
 private:
     bool m_condition = false;
-    std::shared_ptr<BehaviorTreeNode> leftChild; //trueChildren
-    std::shared_ptr<BehaviorTreeNode> rightChild; //falseChildren
+    std::shared_ptr<BehaviorTreeNode> leftChild; //trueChild
+    std::shared_ptr<BehaviorTreeNode> rightChild; //falseChild
 };
 
 //A Selector Node examines its child components in sequence from left to right, 
@@ -165,7 +165,11 @@ public:
 
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
+    
+    //generates uniformly distributed integers between 0 and the number of children.
     std::uniform_int_distribution<int> m_distribution;
+
+    //std::default_random_engine that is used to generate random numbers
     std::default_random_engine m_eng;
 };
 
@@ -188,7 +192,12 @@ public:
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
     std::vector<float> m_weights;
+
+    //The discrete distribution used to randomly select a child node based on its weight. 
+    //The weights are normalized to ensure they sum up to 1.0.
     std::discrete_distribution<int> m_distribution;
+    
+    //std::default_random_engine that is used to generate random numbers
     std::default_random_engine m_eng;
 };
 
@@ -286,6 +295,7 @@ public:
 
 private:
     float m_probability;
+    //std::default_random_engine that is used to generate random numbers
     std::default_random_engine m_eng;
 };
 

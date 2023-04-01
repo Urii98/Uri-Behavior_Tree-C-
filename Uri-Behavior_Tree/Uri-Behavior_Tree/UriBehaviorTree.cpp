@@ -323,6 +323,7 @@ NodeStatus Repeater::Run()
 //RandomBernoulliDistribution
 RandomBernoulliDistribution::RandomBernoulliDistribution() : m_probability(0.5)
 {
+    //// Initialize the random engine with the current time as seed
     m_eng = std::default_random_engine(std::time(0));
 }
 
@@ -336,6 +337,9 @@ NodeStatus RandomBernoulliDistribution::Run()
 {
     assert(child && "RandomBernoulliDistribution: no child node");
 
+    //Bernoulli distribution:a discrete probability distribution that describes the outcome of a random 
+    //experiment that can only have two possible outcomes, usually labeled as success or failure. 
+    //These two outcomes are mutually exclusive, meaning that only one of them can occur in a single trial.
     std::bernoulli_distribution bern_dist(m_probability);
 
     bool output = bern_dist(m_eng);
