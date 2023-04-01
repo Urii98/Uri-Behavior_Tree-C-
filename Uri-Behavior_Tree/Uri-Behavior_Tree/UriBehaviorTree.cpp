@@ -108,7 +108,7 @@ SwitchConditionNode::~SwitchConditionNode()
 
 NodeStatus SwitchConditionNode::Run()
 {
-    if (cond)
+    if (m_condition)
     {
         auto status = leftChild->TickNode();
         if (debug_enabled)
@@ -131,7 +131,7 @@ NodeStatus SwitchConditionNode::Run()
 
 void SwitchConditionNode::SetCondition(bool cond)
 {
-    this->cond = cond;
+    m_condition = cond;
 }
 
 
@@ -231,14 +231,18 @@ NodeStatus RandomUniformDistribution::Run()
 
 
 //WeightedRandomDistribution
+
+// Create a discrete distribution with default weights
 WeightedRandomDistribution::WeightedRandomDistribution()
 {
+    // Initialize weights with 90% and 10% as default for the discrete_distribution to be initialized
     std::vector<float> weights; 
-    weights.push_back(0.90);
-    weights.push_back(0.10);
+    weights.push_back(0.50);
+    weights.push_back(0.50);
     std::discrete_distribution<int> defaultDist(weights.begin(), weights.end());
     m_distribution = defaultDist;
     
+    // Initialize the random engine with the current time as seed
     m_eng = std::default_random_engine(std::time(0));
 
     // Check that the sum of the weights equals 1.0
@@ -248,9 +252,11 @@ WeightedRandomDistribution::WeightedRandomDistribution()
     nodeName = "WeightedRandomDistribution";
 }
 
+ // Create a discrete distribution with the provided weights
 WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weights) :
     m_distribution(weights.begin(), weights.end())
 {
+    // Initialize the random engine with the current time as seed
     m_eng = std::default_random_engine(std::time(0));
 
     // Check that the sum of the weights equals 1.0
@@ -284,9 +290,9 @@ NodeStatus WeightedRandomDistribution::Run()
 
     // Select a random child node based on the weights
     int index = m_distribution(m_eng);
-    //std::cout << "child " << index << " Selected" << std::endl;
     std::shared_ptr<BehaviorTreeNode> child = children[index];
 
+    // Execute the selected child node
     return child->TickNode();
 }
 

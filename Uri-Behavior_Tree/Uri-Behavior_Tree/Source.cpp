@@ -81,11 +81,11 @@ int main()
 	stabAbilityWeighted->nodeName = "stabAbilityWeighted";
 
 	auto abilityUp = std::make_shared<SwitchConditionNode>(stabAbilityWeighted, normalAttack);
-	abilityUp->SetCondition(giveMeTrue());
+	abilityUp->SetCondition(true);
 	abilityUp->nodeName = "abilityUp";
 
 	auto isInsideRange = std::make_shared<SwitchConditionNode>(abilityUp, getCloser);
-	isInsideRange->SetCondition(giveMeTrue());
+	isInsideRange->SetCondition(true);
 	isInsideRange->nodeName = "isInsideRange";
 
 	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);

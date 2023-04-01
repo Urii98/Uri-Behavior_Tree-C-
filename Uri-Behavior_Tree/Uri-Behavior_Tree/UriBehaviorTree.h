@@ -63,9 +63,9 @@ public:
 };
 
 
-//Each node in the tree is connected to other nodesand evaluated sequentially during tree execution, 
-//from the root to the leaves.The BehaviorTree class implements this structureand provides a method 
-//to run the treeand change the root of the tree as needed.
+//Each node in the tree is connected to other nodes and evaluated sequentially during tree execution, 
+//from the root to the leaves.The BehaviorTree class implements this structure and provides a method 
+//to run the tree and change the root of the tree as needed.
 class BehaviorTree : public BehaviorTreeNode
 {
 public:
@@ -101,10 +101,10 @@ public:
     SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right);
     virtual ~SwitchConditionNode();
     NodeStatus Run() override;
-    void SetCondition(bool cond);
+    void SetCondition(bool condition);
 
 private:
-    bool cond = false;
+    bool m_condition = false;
     std::shared_ptr<BehaviorTreeNode> leftChild; //trueChildren
     std::shared_ptr<BehaviorTreeNode> rightChild; //falseChildren
 };
