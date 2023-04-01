@@ -1,0 +1,255 @@
+#include "UriBehaviorTree.h"
+
+//BehaviorTreeNode
+NodeStatus BehaviorTreeNode::TickNode()
+{
+	if (currentStatus != NodeStatus::Running) {
+		ResetNode();
+	}
+
+	currentStatus = Run();
+
+	return currentStatus;
+}
+
+
+
+//BehaviorTree
+BehaviorTree::BehaviorTree() {}
+
+BehaviorTree::BehaviorTree(const std::shared_ptr<BehaviorTreeNode>& rootNode) : root(rootNode) {}
+
+NodeStatus BehaviorTree::Run()
+{
+	return root->TickNode();
+}
+
+void BehaviorTree::SetRoot(const std::shared_ptr<BehaviorTreeNode> node)
+{
+	root = node;
+}
+
+
+
+//ConditionNode
+ConditionNode::~ConditionNode() {}
+
+NodeStatus ConditionNode::Run()
+{
+    if (test)
+    {
+        currentStatus = NodeStatus::Success;
+    }
+    else
+    {
+        currentStatus = NodeStatus::Failure;
+    }
+
+    return NodeStatus::Success;
+}
+
+
+
+//SwitchConditionNode
+SwitchConditionNode::SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right) :
+    leftChild(left),
+    rightChild(right)
+{}
+
+SwitchConditionNode::~SwitchConditionNode()
+{}
+
+NodeStatus SwitchConditionNode::Run()
+{
+    if (cond)
+    {
+        return leftChild->TickNode();
+    }
+    else
+    {
+        return rightChild->TickNode();
+    }
+}
+
+void SwitchConditionNode::SetCondition(bool cond)
+{
+    this->cond = cond;
+}
+
+
+
+//SelectorNode
+void SelectorNode::AddChild(std::shared_ptr<BehaviorTreeNode> child)
+{
+    children.push_back(child);
+}
+
+bool SelectorNode::IsEmpty() const
+{
+    return children.empty();
+}
+
+NodeStatus SelectorNode::Run()
+{
+    for (auto& child : children) {
+        NodeStatus status = child->TickNode();
+        if (status == NodeStatus::Success) {
+            return status;
+        }
+    }
+    return NodeStatus::Failure;
+}
+
+
+
+//SequenceNoce
+void SequenceNode::AddChild(std::shared_ptr<BehaviorTreeNode> child)
+{
+    children.push_back(child);
+}
+
+bool SequenceNode::IsEmpty() const
+{
+    return children.empty();
+}
+
+NodeStatus SequenceNode::Run()
+{
+    for (auto& child : children) {
+
+        NodeStatus status = child->TickNode();
+
+        if (status == NodeStatus::Failure)
+        {
+            return status;
+        }
+    }
+
+    return NodeStatus::Success;
+}
+
+
+
+//RandomUniformDistribution
+RandomUniformDistribution::RandomUniformDistribution(int numChildren) : m_distribution(0, numChildren - 1)
+{
+    m_eng = std::default_random_engine(std::time(0));
+}
+
+RandomUniformDistribution::~RandomUniformDistribution() {}
+
+void RandomUniformDistribution::AddChild(std::shared_ptr<BehaviorTreeNode> child)
+{
+    children.push_back(child);
+}
+
+bool RandomUniformDistribution::IsEmpty() const
+{
+    return children.empty();
+}
+
+NodeStatus RandomUniformDistribution::Run()
+{
+    int index = m_distribution(m_eng);
+    std::shared_ptr<BehaviorTreeNode> child = children[index];
+
+    return child->TickNode();
+}
+
+
+
+//WeightedRandomDistribution
+WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weights) :
+    m_distribution(weights.begin(), weights.end())
+{
+    m_eng = std::default_random_engine(std::time(0));
+
+    // Check that the sum of the weights equals 1.0
+    float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
+    assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
+
+}
+
+WeightedRandomDistribution::~WeightedRandomDistribution() {}
+
+void WeightedRandomDistribution::AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight)
+{
+    children.push_back(child);
+    m_weights.push_back(weight);
+    // Update the distribution with the new weights
+    m_distribution = std::discrete_distribution<int>(m_weights.begin(), m_weights.end());
+}
+
+bool WeightedRandomDistribution::IsEmpty() const
+{
+    return children.empty();
+}
+
+NodeStatus WeightedRandomDistribution::Run()
+{
+    // Check that the sum of the weights equals 1.0
+    float sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
+    assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
+
+
+    // Select a random child node based on the weights
+    int index = m_distribution(m_eng);
+    std::shared_ptr<BehaviorTreeNode> child = children[index];
+
+    return child->TickNode();
+}
+
+
+
+//Repeater
+Repeater::Repeater(int num_iterations) : num_iterations(num_iterations)
+{
+}
+
+void Repeater::ResetNode()
+{
+    current_iteration = 0;
+}
+
+NodeStatus Repeater::Run()
+{
+    while (current_iteration < num_iterations) {
+        child->TickNode();
+        current_iteration++;
+    }
+
+    return NodeStatus::Success;
+}
+
+
+
+//RandomBernoulliDistribution
+RandomBernoulliDistribution::RandomBernoulliDistribution() : m_probability(0.5)
+{
+    m_eng = std::default_random_engine(std::time(0));
+}
+
+RandomBernoulliDistribution::RandomBernoulliDistribution(float probability) : m_probability(probability)
+{
+    assert(m_probability >= 0.0 && m_probability <= 1.0 && "Probability must be between 0 and 1");
+    m_eng = std::default_random_engine(std::time(0));
+}
+
+NodeStatus RandomBernoulliDistribution::Run()
+{
+    assert(child && "RandomBernoulliDistribution: no child node");
+
+    std::bernoulli_distribution bern_dist(m_probability);
+
+    bool output = bern_dist(m_eng);
+
+    if (output)
+    {
+        child->TickNode();
+        return NodeStatus::Success;
+    }
+    else
+    {
+        return NodeStatus::Failure;
+    }
+}

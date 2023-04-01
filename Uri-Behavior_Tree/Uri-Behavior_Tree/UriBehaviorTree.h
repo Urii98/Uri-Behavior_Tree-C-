@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BEHAVIOR_TREE_NODE_H
+#define BEHAVIOR_TREE_NODE_H
+
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -41,30 +43,19 @@ enum class NodeStatus
 //BehaviorTreeNode class is the base class for all behavior tree nodes.
 //It defines a basic interface for running a behavior tree nodeand getting its current status.
 //The class is abstract, which means that it cannot be instantiated directlyand must be subclassed to create specific types of nodes.
-class BehaviorTreeNode 
-{
+
+class BehaviorTreeNode {
 public:
+    virtual ~BehaviorTreeNode() {};
+    virtual NodeStatus Run() = 0;
+    virtual void ResetNode() {}
 
-	virtual ~BehaviorTreeNode() {};
-	virtual NodeStatus Run() = 0;
-	virtual void ResetNode() {}
+    NodeStatus TickNode();
 
-    NodeStatus TickNode()
-    {
-        if (currentStatus != NodeStatus::Running) {
-            ResetNode();
-        }
-
-        currentStatus = Run();
-
-        return currentStatus;
-    }
-    
     NodeStatus GetStatus() const { return currentStatus; }
-    
+
 protected:
     NodeStatus currentStatus = NodeStatus::Default;
-
 };
 
 
@@ -74,17 +65,15 @@ protected:
 class BehaviorTree : public BehaviorTreeNode
 {
 public:
-    BehaviorTree() {}
-    BehaviorTree(const std::shared_ptr<BehaviorTreeNode> &rootNode) : BehaviorTree() { root = rootNode; }
-    
-    NodeStatus Run() { return root->TickNode(); }
+    BehaviorTree();
+    BehaviorTree(const std::shared_ptr<BehaviorTreeNode>& rootNode);
 
-    void SetRoot(const std::shared_ptr<BehaviorTreeNode> node) { root = node; }
+    NodeStatus Run() override;
+    void SetRoot(const std::shared_ptr<BehaviorTreeNode> node);
 
 private:
     std::shared_ptr<BehaviorTreeNode> root;
 };
-
 
 //The Condition Node represents a Boolean test that can evaluate to either true or false
 //If the test evaluates to true, the node returns a SUCCESS status code, and if it evaluates 
@@ -92,29 +81,11 @@ private:
 class ConditionNode : public BehaviorTreeNode
 {
 public:
-
-    virtual ~ConditionNode() {}
-
-    NodeStatus Run() override
-    {
-        if (test)
-        {
-            currentStatus = NodeStatus::Success;
-        }
-        else
-        {
-            currentStatus = NodeStatus::Failure;
-        }
-
-        return NodeStatus::Success;
-
-    }
-
+    virtual ~ConditionNode();
+    virtual NodeStatus Run() override;
 
 public:
     bool test = false;
-    //std::shared_ptr<BehaviorTreeNode> leftChildren; //trueChildren
-    //std::shared_ptr<BehaviorTreeNode> rightChildren; //falseChildren
 };
 
 //The SwitchConditionNode is a type of behavior tree node that has two child nodes, one for true and one for false conditions.
@@ -122,31 +93,12 @@ public:
 class SwitchConditionNode : public BehaviorTreeNode
 {
 public:
-    SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right) :
-        leftChild(left),
-        rightChild(right)
-    {}
-    
-    virtual ~SwitchConditionNode() {}
-    
-    NodeStatus Run() override
-    {
-        if (cond)
-        {
-            return leftChild->TickNode();
-        }
-        else
-        {
-            return rightChild->TickNode();
-        }
+    SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right);
+    virtual ~SwitchConditionNode();
+    NodeStatus Run() override;
+    void SetCondition(bool cond);
 
-        return NodeStatus::Failure;
-
-    }
-
-    void SetCondition(bool cond) { this->cond = cond; }
-
-public:
+private:
     bool cond = false;
     std::shared_ptr<BehaviorTreeNode> leftChild; //trueChildren
     std::shared_ptr<BehaviorTreeNode> rightChild; //falseChildren
@@ -159,36 +111,14 @@ public:
 class SelectorNode : public BehaviorTreeNode
 {
 public:
+    virtual ~SelectorNode() {}
 
-    virtual ~SelectorNode() {};
-
-    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
-    {
-        children.push_back(child);
-    }
-
-    bool IsEmpty() const { return children.empty(); }
-
-    NodeStatus Run() override
-    {
-        for (auto& child : children) {
-           
-            NodeStatus status = child->TickNode(); 
-            
-            if (status == NodeStatus::Success)
-            {
-                return status;
-            }
-        }
-
-        return NodeStatus::Failure;
-    }
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child);
+    bool IsEmpty() const;
+    NodeStatus Run() override;
 
 private:
-    
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
-
-  
 };
 
 
@@ -201,31 +131,13 @@ class SequenceNode : public BehaviorTreeNode
 public:
     virtual ~SequenceNode() {};
 
-    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
-    {
-        children.push_back(child);
-    }
-
-    bool IsEmpty() const { return children.empty(); }
-
-    NodeStatus Run() override
-    {
-        for (auto& child : children) {
-
-            NodeStatus status = child->TickNode();
-
-            if (status == NodeStatus::Failure)
-            {
-                return status;
-            }
-        }
-
-        return NodeStatus::Success;
-    }
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child);
+    bool IsEmpty() const;
+    NodeStatus Run() override;
 
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
-};
+}; 
 
 
 //RandomUniformDistribution randomly selects one of its children to execute,
@@ -234,35 +146,20 @@ private:
 class RandomUniformDistribution : public BehaviorTreeNode
 {
 public:
-    RandomUniformDistribution(int numChildren) : m_distribution(0, numChildren - 1)
-    {
-        m_eng = std::default_random_engine(std::time(0));
-    }
+    RandomUniformDistribution(int numChildren);
 
-    virtual ~RandomUniformDistribution() {};
+    virtual ~RandomUniformDistribution();
 
-    void AddChild(std::shared_ptr<BehaviorTreeNode> child)
-    {
-        children.push_back(child);
-    }
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child);
 
-    bool IsEmpty() const { return children.empty(); }
+    bool IsEmpty() const;
 
-    NodeStatus Run() override
-    {
-
-        int index = m_distribution(m_eng);
-        std::shared_ptr<BehaviorTreeNode> child = children[index];
-
-        return child->TickNode();
-    }
-
+    NodeStatus Run() override;
 
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
     std::uniform_int_distribution<int> m_distribution;
     std::default_random_engine m_eng;
-
 };
 
 
@@ -274,44 +171,11 @@ private:
 class WeightedRandomDistribution : public BehaviorTreeNode
 {
 public:
-    //Constructor that takes a vector of weights to be used in the distribution.
-    //The sum of the weights must be 1.0.
-    WeightedRandomDistribution(std::vector<float> weights) :
-        m_distribution(weights.begin(), weights.end())
-    {
-        m_eng = std::default_random_engine(std::time(0));
-
-        // Check that the sum of the weights equals 1.0
-        float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
-        assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
-
-    }
-
-    virtual ~WeightedRandomDistribution() {};
-
-    void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight)
-    {
-        children.push_back(child);
-        m_weights.push_back(weight);
-        // Update the distribution with the new weights
-        m_distribution = std::discrete_distribution<int>(m_weights.begin(), m_weights.end());
-    }
-
-    bool IsEmpty() const { return children.empty(); }
-
-    NodeStatus Run() override
-    {
-        // Check that the sum of the weights equals 1.0
-        float sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
-        assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
-
-
-        // Select a random child node based on the weights
-        int index = m_distribution(m_eng);
-        std::shared_ptr<BehaviorTreeNode> child = children[index];
-
-        return child->TickNode();
-    }
+    WeightedRandomDistribution(std::vector<float> weights);
+    virtual ~WeightedRandomDistribution();
+    void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight);
+    bool IsEmpty() const;
+    NodeStatus Run() override;
 
 private:
     std::vector<std::shared_ptr<BehaviorTreeNode>> children;
@@ -392,22 +256,10 @@ public:
 class Repeater : public DecoratorNode
 {
 public:
-    Repeater(int num_iterations) : num_iterations(num_iterations) {}
+    Repeater(int num_iterations);
 
-    void ResetNode() override
-    {
-        current_iteration = 0;
-    }
-
-    NodeStatus Run() override
-    {
-        while (current_iteration < num_iterations) {
-            child->TickNode();
-            current_iteration++;
-        }
-
-        return NodeStatus::Success;
-    }
+    void ResetNode() override;
+    NodeStatus Run() override;
 
 protected:
     int num_iterations;
@@ -417,42 +269,16 @@ protected:
 
 //RandomBernoulliDistribution represents a random Bernoulli distribution decorator node for use in behavior trees.
 //It checks if it has a child node and randomly executes it based on a given probability.
-class RandomBernoulliDistribution : public DecoratorNode
-{
+class RandomBernoulliDistribution : public DecoratorNode {
 public:
-    RandomBernoulliDistribution() : m_probability(0.5) 
-    {
-        m_eng = std::default_random_engine(std::time(0));
-    }
-    RandomBernoulliDistribution(float probablity) : m_probability(probablity) 
-    {
-        assert(m_probability >= 0.0 && m_probability <= 1.0 && "Probability must be between 0 and 1");
-        m_eng = std::default_random_engine(std::time(0));
-    }
+    RandomBernoulliDistribution();
+    RandomBernoulliDistribution(float probability);
 
-    NodeStatus Run() override
-    {
-        assert(child && "RandomBernoulliDistribution: no child node");
-        
-        std::bernoulli_distribution bern_dist(m_probability);
-
-        bool output = bern_dist(m_eng);
-
-        if (output)
-        {
-            child->TickNode();
-            return NodeStatus::Success;
-        }
-        else
-        {
-            return NodeStatus::Failure;
-        }
-            
-
-    }
+    NodeStatus Run() override;
 
 private:
     float m_probability;
     std::default_random_engine m_eng;
 };
 
+#endif
