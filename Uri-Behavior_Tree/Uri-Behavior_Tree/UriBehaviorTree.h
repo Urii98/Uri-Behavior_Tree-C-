@@ -117,7 +117,8 @@ public:
     //std::shared_ptr<BehaviorTreeNode> rightChildren; //falseChildren
 };
 
-
+//The SwitchConditionNode is a type of behavior tree node that has two child nodes, one for true and one for false conditions.
+//SwitchConditionNode evaluates the given condition and executes the true child if the condition is true, or the false child otherwise.
 class SwitchConditionNode : public BehaviorTreeNode
 {
 public:
