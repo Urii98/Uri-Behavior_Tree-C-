@@ -178,6 +178,7 @@ private:
 class WeightedRandomDistribution : public BehaviorTreeNode
 {
 public:
+    WeightedRandomDistribution();
     WeightedRandomDistribution(std::vector<float> weights);
     virtual ~WeightedRandomDistribution();
     void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight);

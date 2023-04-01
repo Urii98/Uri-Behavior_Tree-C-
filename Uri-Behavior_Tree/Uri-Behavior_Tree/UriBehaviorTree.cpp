@@ -231,6 +231,23 @@ NodeStatus RandomUniformDistribution::Run()
 
 
 //WeightedRandomDistribution
+WeightedRandomDistribution::WeightedRandomDistribution()
+{
+    std::vector<float> weights; 
+    weights.push_back(0.90);
+    weights.push_back(0.10);
+    std::discrete_distribution<int> defaultDist(weights.begin(), weights.end());
+    m_distribution = defaultDist;
+    
+    m_eng = std::default_random_engine(std::time(0));
+
+    // Check that the sum of the weights equals 1.0
+    float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
+    assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
+
+    nodeName = "WeightedRandomDistribution";
+}
+
 WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weights) :
     m_distribution(weights.begin(), weights.end())
 {

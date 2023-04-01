@@ -69,19 +69,15 @@ bool giveMeTrue()
 }
 int main()
 {
-	std::vector<float> a;
-	a.push_back(0.90);
-	a.push_back(0.10);
-
 
 	auto getCloser = std::make_shared<GetCloser>();
 	auto moveAway = std::make_shared<MoveAway>(); 
 	auto normalAttack = std::make_shared<NormalAttack>();
 	auto tripleStab = std::make_shared<TripleStab>();
 
-	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>(a);
-	stabAbilityWeighted->AddChild(tripleStab, 0.25);
-	stabAbilityWeighted->AddChild(normalAttack, 0.75);
+	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>();
+	stabAbilityWeighted->AddChild(tripleStab, 0.10);
+	stabAbilityWeighted->AddChild(normalAttack, 0.90);
 	stabAbilityWeighted->nodeName = "stabAbilityWeighted";
 
 	auto abilityUp = std::make_shared<SwitchConditionNode>(stabAbilityWeighted, normalAttack);
