@@ -128,18 +128,18 @@ int main()
 	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>();
 	stabAbilityWeighted->AddChild(tripleStab, 0.10);
 	stabAbilityWeighted->AddChild(normalAttack, 0.90);
-	stabAbilityWeighted->nodeName = "stabAbilityWeighted";
+	stabAbilityWeighted->SetNodeName("stabAbilityWeighted");
 
 	auto abilityUp = std::make_shared<SwitchConditionNode>(stabAbilityWeighted, normalAttack);
 	abilityUp->SetCondition(true);
-	abilityUp->nodeName = "abilityUp";
+	abilityUp->SetNodeName("abilityUp");
 
 	auto isInsideRange = std::make_shared<SwitchConditionNode>(abilityUp, getCloser);
 	isInsideRange->SetCondition(true);
-	isInsideRange->nodeName = "isInsideRange";
+	isInsideRange->SetNodeName("isInsideRange");
 
 	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
-	cheackHealth->nodeName = "cheackHealth";
+	cheackHealth->SetNodeName("cheackHealth");
 
 	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
 	BehaviorTree tree;
@@ -184,51 +184,51 @@ int main()
 	//To Do 4: Control Flow Nodes
 	auto playerInFront = std::make_shared<ConditionNode>();
 	playerInFront->test = true;
-	playerInFront->nodeName = "playerInFront";
+	playerInFront->SetNodeName("playerInFront");
 
 	auto sequenceAttackWithSword = std::make_shared<SequenceNode>();
 	sequenceAttackWithSword->AddChild(playerInFront);
 	sequenceAttackWithSword->AddChild(swingSword);
-	sequenceAttackWithSword->nodeName = "sequenceAttackWithSword";
+	sequenceAttackWithSword->SetNodeName("sequenceAttackWithSword");
 
 	auto selectorAttack = std::make_shared<SelectorNode>();
 	selectorAttack->AddChild(sequenceAttackWithSword);
 	selectorAttack->AddChild(tauntThePlayer);
-	selectorAttack->nodeName = "selectorAttack";
+	selectorAttack->SetNodeName("selectorAttack");
 
 	auto playerIsInSight = std::make_shared<ConditionNode>();
 	playerIsInSight->test = true;
-	playerIsInSight->nodeName = "playerIsInSight";
+	playerIsInSight->SetNodeName("playerIsInSight");
 
 	auto sequenceNode8 = std::make_shared<SequenceNode>();
 	sequenceNode8->AddChild(playerIsInSight);
 	sequenceNode8->AddChild(selectorAttack);
-	sequenceNode8->nodeName = "sequenceNode8";
+	sequenceNode8->SetNodeName("sequenceNode8");
 
 	auto hasLowHP = std::make_shared<ConditionNode>();
 	hasLowHP->test = false;
-	hasLowHP->nodeName = "hasLowHP";
+	hasLowHP->SetNodeName("hasLowHP");
 
 	auto sequenceNode5 = std::make_shared<SequenceNode>();
 	sequenceNode5->AddChild(hasLowHP);
 	sequenceNode5->AddChild(findAid);
-	sequenceNode5->nodeName = "sequenceNode5";
+	sequenceNode5->SetNodeName("sequenceNode5");
 	
 	auto playerIsAttacking = std::make_shared<ConditionNode>();
 	playerIsAttacking->test = false;
-	playerIsAttacking->nodeName = "playerIsAttacking";
+	playerIsAttacking->SetNodeName("playerIsAttacking");
 
 	auto sequenceNode2 = std::make_shared<SequenceNode>();
 	sequenceNode2->AddChild(playerIsAttacking);
 	sequenceNode2->AddChild(evade);
-	sequenceNode2->nodeName = "sequenceNode2";
+	sequenceNode2->SetNodeName("sequenceNode2");
 
 	auto rootSelectorNode = std::make_shared<SelectorNode>();
 	rootSelectorNode->AddChild(sequenceNode2);
 	rootSelectorNode->AddChild(sequenceNode5);
 	rootSelectorNode->AddChild(sequenceNode8);
 	rootSelectorNode->AddChild(wander);
-	rootSelectorNode->nodeName = "rootSelectorNode";
+	rootSelectorNode->SetNodeName("rootSelectorNode");
 
 	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
 	BehaviorTree treeExercise2;

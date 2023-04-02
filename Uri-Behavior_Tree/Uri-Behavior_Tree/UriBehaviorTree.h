@@ -44,6 +44,7 @@ public:
     NodeStatus TickNode();
 
     NodeStatus GetStatus() const { return currentStatus; }
+    void SetNodeName(const std::string& name) { nodeName = name; }
 
     static void SetDebugEnabled(bool value);
 
@@ -57,7 +58,7 @@ protected:
 private:
     std::string statusToString(NodeStatus NodeStatus);
     
-public:
+protected:
     
     std::string nodeName;
 };
