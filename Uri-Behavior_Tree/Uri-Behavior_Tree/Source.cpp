@@ -5,26 +5,8 @@
 #include<string>
 #include "UriBehaviorTree.h"
 
-class Action : public BehaviorTreeNode
-{
-public:
-	NodeStatus Run() override
-	{
-		std::cout << "Me tengo que curar!" << std::endl;
-		return NodeStatus::Success;
-	}
-};
 
-class ActionDos : public BehaviorTreeNode
-{
-public:
-	NodeStatus Run() override
-	{
-		std::cout << "Tengo que atacarle!" << std::endl;
-		return NodeStatus::Success;
-	}
-};
-
+//Exercise 1 Action Nodes
 class MoveAway : public BehaviorTreeNode
 {
 public:
@@ -63,18 +45,86 @@ public:
 	}
 };
 
-bool giveMeTrue()
+//Exercise 2 Action Nodes
+class SwingSword : public BehaviorTreeNode
 {
-	return true;
-}
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Swing sword" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
+class Taunt : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Taunt the player" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
+class Wander : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Wander" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
+
+class FindAid : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Find aid" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
+class Evade : public BehaviorTreeNode
+{
+public:
+	NodeStatus Run() override
+	{
+		std::cout << "Evade" << std::endl;
+		return NodeStatus::Success;
+	}
+};
+
 int main()
 {
 
-	auto getCloser = std::make_shared<GetCloser>();
-	auto moveAway = std::make_shared<MoveAway>(); 
-	auto normalAttack = std::make_shared<NormalAttack>();
-	auto tripleStab = std::make_shared<TripleStab>();
 
+
+	std::cout << "----------------------" << std::endl;
+	std::cout << "Exercise 1: " << std::endl;
+	//Exercise 1
+
+	//To Do 2: Identify the nodes from the diagram: 
+		//4 Action Nodes: 
+			//- Triple Stab
+			//- Normal Attack
+			//- Get Closer 
+			//- Move Away
+		//4 Control Flow Nodes: 
+			// - 25% Change Triple Stab Ability (WeightedRandomDistribution)
+			// - Ability Up? (SwitchConditionNode)
+			// - Is the opponent inside my range attack? (SwitchConditionNode)
+			// - Am I low of health? (SwitchConditionNode) /Root/
+
+	//To Do 3: Action Nodes
+	auto tripleStab = std::make_shared<TripleStab>();
+	auto normalAttack = std::make_shared<NormalAttack>();
+	auto getCloser = std::make_shared<GetCloser>();
+	auto moveAway = std::make_shared<MoveAway>();
+
+	//To Do 4: Control Flow Nodes
 	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>();
 	stabAbilityWeighted->AddChild(tripleStab, 0.10);
 	stabAbilityWeighted->AddChild(normalAttack, 0.90);
@@ -90,13 +140,108 @@ int main()
 
 	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
 	cheackHealth->nodeName = "cheackHealth";
-	
 
-	BehaviorTree tree; 
-
+	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
+	BehaviorTree tree;
 	tree.SetDebugEnabled(true);
 	tree.SetRoot(cheackHealth);
+
+	//To Do 6: Running our Behavior tree
 	tree.Run();
+	std::cout << "----------------------" << std::endl;
+
+	//------------------------------------------------------------------------------------------//
+
+	std::cout << "Exercise 2: " << std::endl;
+	//Exercise 1
+	//To Do 2: Identify the nodes from the diagram: 
+		//5 Action Nodes: 
+			//- Swing sword (15)
+			//- Taunt the player (13)
+			//- Wander (11)
+			//- Find aid (7)
+			//- Evade (4)
+
+		//10 Control Flow Nodes: 
+			// - Player in front? (14) (Condition Node) 
+			// - Attack player with sword (12) (Sequence Node)
+			// - Attack (10) (Selector Node)
+			// - Player is in line of sight? (9) (Condition Node)
+			// - (8) (Sequence Node)
+			// - Has low HP? (6) (condition Node)
+			// - (5) (Sequence Node)
+			// - Player is attacking? (3) (Condition Node)
+			// - (2) (Sequence Node)
+			// - (1) (Selector Node) /Root/
+
+	//To Do 3: Action Nodes
+	auto swingSword = std::make_shared<SwingSword>();
+	auto tauntThePlayer = std::make_shared<Taunt>();
+	auto wander = std::make_shared<Wander>();
+	auto findAid = std::make_shared<FindAid>();
+	auto evade = std::make_shared<Evade>();
+
+	//To Do 4: Control Flow Nodes
+	auto playerInFront = std::make_shared<ConditionNode>();
+	playerInFront->test = true;
+	playerInFront->nodeName = "playerInFront";
+
+	auto sequenceAttackWithSword = std::make_shared<SequenceNode>();
+	sequenceAttackWithSword->AddChild(playerInFront);
+	sequenceAttackWithSword->AddChild(swingSword);
+	sequenceAttackWithSword->nodeName = "sequenceAttackWithSword";
+
+	auto selectorAttack = std::make_shared<SelectorNode>();
+	selectorAttack->AddChild(sequenceAttackWithSword);
+	selectorAttack->AddChild(tauntThePlayer);
+	selectorAttack->nodeName = "selectorAttack";
+
+	auto playerIsInSight = std::make_shared<ConditionNode>();
+	playerIsInSight->test = true;
+	playerIsInSight->nodeName = "playerIsInSight";
+
+	auto sequenceNode8 = std::make_shared<SequenceNode>();
+	sequenceNode8->AddChild(playerIsInSight);
+	sequenceNode8->AddChild(selectorAttack);
+	sequenceNode8->nodeName = "sequenceNode8";
+
+	auto hasLowHP = std::make_shared<ConditionNode>();
+	hasLowHP->test = false;
+	hasLowHP->nodeName = "hasLowHP";
+
+	auto sequenceNode5 = std::make_shared<SequenceNode>();
+	sequenceNode5->AddChild(hasLowHP);
+	sequenceNode5->AddChild(findAid);
+	sequenceNode5->nodeName = "sequenceNode5";
+	
+	auto playerIsAttacking = std::make_shared<ConditionNode>();
+	playerIsAttacking->test = false;
+	playerIsAttacking->nodeName = "playerIsAttacking";
+
+	auto sequenceNode2 = std::make_shared<SequenceNode>();
+	sequenceNode2->AddChild(playerIsAttacking);
+	sequenceNode2->AddChild(evade);
+	sequenceNode2->nodeName = "sequenceNode2";
+
+	auto rootSelectorNode = std::make_shared<SelectorNode>();
+	rootSelectorNode->AddChild(sequenceNode2);
+	rootSelectorNode->AddChild(sequenceNode5);
+	rootSelectorNode->AddChild(sequenceNode8);
+	rootSelectorNode->AddChild(wander);
+	rootSelectorNode->nodeName = "rootSelectorNode";
+
+	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
+	BehaviorTree treeExercise2;
+	treeExercise2.SetDebugEnabled(true);
+	treeExercise2.SetRoot(rootSelectorNode);
+
+	//To Do 6: Running our Behavior tree
+	treeExercise2.Run();
+
+
+	std::cout << "----------------------" << std::endl;
+
+
 
 	//auto heal = std::make_shared<Action>();
 	//auto attack = std::make_shared<ActionDos>();
@@ -142,40 +287,16 @@ int main()
 
 
 
-	
-	//tree.SetRoot(weighted);
-	//tree.Run();
 
-	//std::default_random_engine e(time(0));
-	//std::uniform_real_distribution<float> u(0,1);
-	//std::uniform_int_distribution<int> a(0,5);
-	//std::normal_distribution<> n(4, 1.5); 
-	//std::bernoulli_distribution b(.75); //probabilidad de true, por defecto está en 50%
 
-	//for (int i = 0; i < 10; i++)
-	//{
-	//	//std::cout << e() << std::endl;
-	//	std::cout << u(e) << std::endl;
-	//	//std::cout << n(e) << std::endl;
-	// 
-	//}
 
-	//bool test = b(e);
-	//std::cout << (test ? "Test 1" : "test 2") << std::endl;
 
-	////printar la distribución
-	//std::vector<unsigned> vals(9);
-	//for(int i = 0; i != 200; ++i)
-	//{
-	//	unsigned v = lround(n(e));
-	//	if (v < vals.size())
-	//		++vals[v];
-	//}
 
-	//for (int i = 0; i != vals.size(); ++i)
-	//{
-	//	std::cout << i << ": " << std::string(vals[i], '*') << std::endl;
-	//}
+
+
+
+
+
 
 
 

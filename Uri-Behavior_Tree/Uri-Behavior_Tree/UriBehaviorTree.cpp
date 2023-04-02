@@ -90,7 +90,7 @@ NodeStatus ConditionNode::Run()
         currentStatus = NodeStatus::Failure;
     }
 
-    return NodeStatus::Success;
+    return currentStatus;
 }
 
 
