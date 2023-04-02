@@ -224,10 +224,10 @@ NodeStatus RandomUniformDistribution::Run()
 
 
 
-//WeightedRandomDistribution
+//RandomWeightedDistribution
 
 // Create a discrete distribution with default weights
-WeightedRandomDistribution::WeightedRandomDistribution()
+RandomWeightedDistribution::RandomWeightedDistribution()
 {
     // Initialize weights with 90% and 10% as default for the discrete_distribution to be initialized
     std::vector<float> weights; 
@@ -243,11 +243,11 @@ WeightedRandomDistribution::WeightedRandomDistribution()
     float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
     assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
 
-    nodeName = "WeightedRandomDistribution";
+    nodeName = "RandomWeightedDistribution";
 }
 
  // Create a discrete distribution with the provided weights
-WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weights) :
+RandomWeightedDistribution::RandomWeightedDistribution(std::vector<float> weights) :
     m_distribution(weights.begin(), weights.end())
 {
     // Initialize the random engine with the current time as seed
@@ -257,12 +257,12 @@ WeightedRandomDistribution::WeightedRandomDistribution(std::vector<float> weight
     float sum = std::accumulate(weights.begin(), weights.end(), 0.0);
     assert(std::abs(sum - 1.0) < 1e-6 && "Weights do not sum up to 1.0");
 
-    nodeName = "WeightedRandomDistribution";
+    nodeName = "RandomWeightedDistribution";
 }
 
-WeightedRandomDistribution::~WeightedRandomDistribution() {}
+RandomWeightedDistribution::~RandomWeightedDistribution() {}
 
-void WeightedRandomDistribution::AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight)
+void RandomWeightedDistribution::AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight)
 {
     children.push_back(child);
     m_weights.push_back(weight);
@@ -270,12 +270,12 @@ void WeightedRandomDistribution::AddChild(std::shared_ptr<BehaviorTreeNode> chil
     m_distribution = std::discrete_distribution<int>(m_weights.begin(), m_weights.end());
 }
 
-bool WeightedRandomDistribution::IsEmpty() const
+bool RandomWeightedDistribution::IsEmpty() const
 {
     return children.empty();
 }
 
-NodeStatus WeightedRandomDistribution::Run()
+NodeStatus RandomWeightedDistribution::Run()
 {
     // Check that the sum of the weights equals 1.0
     float sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);

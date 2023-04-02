@@ -15,7 +15,7 @@
     //Selector : Funciona
     //Sequence : Funciona
     //RandomUniformDistribution : Funciona
-    //WeightedRandomDistribution : Funciona
+    //RandomWeightedDistribution : Funciona
 //Decorator:
     //Inverter : Funciona
     //Succeeder : Funciona
@@ -179,17 +179,17 @@ private:
 };
 
 
-//WeightedRandomDistribution selects a child node to execute based on a weighted random distribution.
+//RandomWeightedDistribution selects a child node to execute based on a weighted random distribution.
 //The user is required to provide a vector of weights that will be used to initialize the discrete distribution.
 //The sum of the weights will be checked to ensure it equals 1.0.Then, when children are added to the distribution, 
 //the weights will be added to the m_weights vector, but a new discrete distribution will not be created since the 
 //initialization was done in the constructor.
-class WeightedRandomDistribution : public BehaviorTreeNode
+class RandomWeightedDistribution : public BehaviorTreeNode
 {
 public:
-    WeightedRandomDistribution();
-    WeightedRandomDistribution(std::vector<float> weights);
-    virtual ~WeightedRandomDistribution();
+    RandomWeightedDistribution();
+    RandomWeightedDistribution(std::vector<float> weights);
+    virtual ~RandomWeightedDistribution();
     void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight);
     bool IsEmpty() const;
     NodeStatus Run() override;

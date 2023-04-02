@@ -113,7 +113,7 @@ int main()
 			//- Get Closer 
 			//- Move Away
 		//4 Control Flow Nodes: 
-			// - 25% Change Triple Stab Ability (WeightedRandomDistribution)
+			// - 25% Change Triple Stab Ability (RandomWeightedDistribution)
 			// - Ability Up? (SwitchConditionNode)
 			// - Is the opponent inside my range attack? (SwitchConditionNode)
 			// - Am I low of health? (SwitchConditionNode) /Root/
@@ -125,7 +125,7 @@ int main()
 	auto moveAway = std::make_shared<MoveAway>();
 
 	//To Do 4: Control Flow Nodes
-	auto stabAbilityWeighted = std::make_shared<WeightedRandomDistribution>();
+	auto stabAbilityWeighted = std::make_shared<RandomWeightedDistribution>();
 	stabAbilityWeighted->AddChild(tripleStab, 0.10);
 	stabAbilityWeighted->AddChild(normalAttack, 0.90);
 	stabAbilityWeighted->SetNodeName("stabAbilityWeighted");
@@ -249,7 +249,7 @@ int main()
 	//auto seq = std::make_shared<SequenceNode>();
 	//auto uniform = std::make_shared<RandomUniformDistribution>(2);
 
-	//auto weighted = std::make_shared<WeightedRandomDistribution>(a);
+	//auto weighted = std::make_shared<RandomWeightedDistribution>(a);
 
 	//auto bernoulliWrap = std::make_shared<RandomBernoulliDistribution>(0.1);
 	//bernoulliWrap->SetChild(heal);
