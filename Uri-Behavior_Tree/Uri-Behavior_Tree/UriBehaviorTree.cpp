@@ -354,3 +354,13 @@ NodeStatus RandomBernoulliDistribution::Run()
         return NodeStatus::Failure;
     }
 }
+
+void RandomBernoulliDistribution::SetProbability(float probability)
+{
+    m_probability = probability;
+}
+
+float RandomBernoulliDistribution::GetProbability() const
+{
+    return m_probability;
+}

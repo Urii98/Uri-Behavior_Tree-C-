@@ -295,6 +295,9 @@ public:
 
     NodeStatus Run() override;
 
+    void SetProbability(float probability);
+    float GetProbability() const;
+
 private:
     float m_probability;
     //std::default_random_engine that is used to generate random numbers
