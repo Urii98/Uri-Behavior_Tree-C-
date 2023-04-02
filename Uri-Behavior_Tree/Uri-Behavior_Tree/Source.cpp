@@ -183,7 +183,7 @@ int main()
 
 	//To Do 4: Control Flow Nodes
 	auto playerInFront = std::make_shared<ConditionNode>();
-	playerInFront->test = true;
+	playerInFront->SetTest(true);
 	playerInFront->SetNodeName("playerInFront");
 
 	auto sequenceAttackWithSword = std::make_shared<SequenceNode>();
@@ -197,7 +197,7 @@ int main()
 	selectorAttack->SetNodeName("selectorAttack");
 
 	auto playerIsInSight = std::make_shared<ConditionNode>();
-	playerIsInSight->test = true;
+	playerIsInSight->SetTest(true);
 	playerIsInSight->SetNodeName("playerIsInSight");
 
 	auto sequenceNode8 = std::make_shared<SequenceNode>();
@@ -206,7 +206,7 @@ int main()
 	sequenceNode8->SetNodeName("sequenceNode8");
 
 	auto hasLowHP = std::make_shared<ConditionNode>();
-	hasLowHP->test = false;
+	hasLowHP->SetTest(false);
 	hasLowHP->SetNodeName("hasLowHP");
 
 	auto sequenceNode5 = std::make_shared<SequenceNode>();
@@ -215,7 +215,7 @@ int main()
 	sequenceNode5->SetNodeName("sequenceNode5");
 	
 	auto playerIsAttacking = std::make_shared<ConditionNode>();
-	playerIsAttacking->test = false;
+	playerIsAttacking->SetTest(false);
 	playerIsAttacking->SetNodeName("playerIsAttacking");
 
 	auto sequenceNode2 = std::make_shared<SequenceNode>();

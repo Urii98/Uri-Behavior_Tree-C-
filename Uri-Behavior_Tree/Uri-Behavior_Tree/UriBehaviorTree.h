@@ -55,13 +55,12 @@ protected:
 protected:
     NodeStatus currentStatus = NodeStatus::Default;
     static bool debug_enabled;
+    std::string nodeName;
     
 private:
     std::string statusToString(NodeStatus NodeStatus);
     
-protected:
     
-    std::string nodeName;
 };
 
 
@@ -91,7 +90,10 @@ public:
     virtual ~ConditionNode();
     virtual NodeStatus Run() override;
 
-public:
+    void SetTest(bool value) { test = value; }
+    bool GetTest() const { return test; }
+
+private:
     bool test = false;
 };
 
@@ -103,7 +105,8 @@ public:
     SwitchConditionNode(std::shared_ptr<BehaviorTreeNode> left, std::shared_ptr<BehaviorTreeNode> right);
     virtual ~SwitchConditionNode();
     NodeStatus Run() override;
-    void SetCondition(bool condition);
+    void SetCondition(bool condition) { m_condition = condition; }
+    bool GetCondition() const { return m_condition; }
 
 private:
     bool m_condition = false;

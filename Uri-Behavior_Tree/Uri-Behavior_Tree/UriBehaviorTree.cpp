@@ -129,12 +129,6 @@ NodeStatus SwitchConditionNode::Run()
     }
 }
 
-void SwitchConditionNode::SetCondition(bool cond)
-{
-    m_condition = cond;
-}
-
-
 
 //SelectorNode
 SelectorNode::SelectorNode()
