@@ -45,6 +45,7 @@ public:
 
     NodeStatus GetStatus() const { return currentStatus; }
     void SetNodeName(const std::string& name) { nodeName = name; }
+    std::string GetNodeName() const { return nodeName; }
 
     static void SetDebugEnabled(bool value);
 

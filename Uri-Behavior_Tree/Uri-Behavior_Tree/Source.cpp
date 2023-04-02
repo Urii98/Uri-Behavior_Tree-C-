@@ -138,13 +138,13 @@ int main()
 	isInsideRange->SetCondition(true);
 	isInsideRange->SetNodeName("isInsideRange");
 
-	auto cheackHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
-	cheackHealth->SetNodeName("cheackHealth");
+	auto checkHealth = std::make_shared<SwitchConditionNode>(moveAway, isInsideRange);
+	checkHealth->SetNodeName("checkHealth");
 
 	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
 	BehaviorTree tree;
 	tree.SetDebugEnabled(true);
-	tree.SetRoot(cheackHealth);
+	tree.SetRoot(checkHealth);
 
 	//To Do 6: Running our Behavior tree
 	tree.Run();
