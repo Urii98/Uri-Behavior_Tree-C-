@@ -1,6 +1,5 @@
 #include <iostream>
 #include <random>
-
 #include<vector>
 #include<string>
 #include "UriBehaviorTree.h"
@@ -99,9 +98,6 @@ public:
 
 int main()
 {
-
-
-
 	std::cout << "----------------------" << std::endl;
 	std::cout << "Exercise 1: " << std::endl;
 	//Exercise 1
@@ -241,66 +237,6 @@ int main()
 
 
 	std::cout << "----------------------" << std::endl;
-
-
-
-	//auto heal = std::make_shared<Action>();
-	//auto attack = std::make_shared<ActionDos>();
-	//auto cond = std::make_shared<ConditionNode>();
-	//auto seq = std::make_shared<SequenceNode>();
-	//auto uniform = std::make_shared<RandomUniformDistribution>(2);
-
-	//auto weighted = std::make_shared<RandomWeightedDistribution>(a);
-
-	//auto bernoulliWrap = std::make_shared<RandomBernoulliDistribution>(0.1);
-	//bernoulliWrap->SetChild(heal);
-	
-	//auto inverter = std::make_shared<Inverter>();
-	//inverter->SetChild(heal);
-
-	//auto succeder = std::make_shared<Succeeder>();
-	//succeder->SetChild(heal);
-
-	//auto failer = std::make_shared<Failer>();
-	//failer->SetChild(heal);
-
-	//auto repeater = std::make_shared<Repeater>(5);
-	//repeater->SetChild(heal);
-	
-	//seq->AddChild(succeder);
-	//seq->AddChild(inverter);
-	//seq->AddChild(failer);
-	//seq->AddChild(repeater);
-	//seq->AddChild(bernoulliWrap);
-	//seq->AddChild(heal);
-	//seq->AddChild(cond);
-	//seq->AddChild(attack);
-	//tree.SetRoot(seq);
-
-
-	//uniform->AddChild(heal);
-	//uniform->AddChild(attack);
-	//tree.SetRoot(uniform);
-
-	//weighted->AddChild(heal, 0.10);
-	//weighted->AddChild(attack, 1.50);
-	//tree.SetRoot(weighted);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	return 0;
