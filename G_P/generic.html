@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Behavior Trees</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<a href="index.html" class="logo">Massively</a>
+					</header>
+
+				<!-- Nav -->
+					<nav id="nav">
+					<ul class="links">
+						<li><a href="index.html">The basics of BH</a></li>
+						<li class="active"><a href="generic.html">Anatomy of BH</a></li>
+						<li><a href="implementing.html">Implementing BH</a></li>
+						<li><a href="documentation.html">Documentation</a></li>
+					</ul>
+					<ul class="icons">
+						<li><a href="https://github.com/Urii98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="https://github.com/Urii98/Uri-Behavior_Tree" class="icon brands alt fa-dribbble"><span class="label">Dribbble</span></a></li>
+					</ul>
+				</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Post -->
+							<section class="post">
+								<header class="major">
+									<span class="date">April 12, 2023</span>
+									<h1>Anatomy of Behavior Trees</h1>
+									<p>In this section, we dive deep into the topic of behavior trees, exploring their structure, and components. Understanding the different types of nodes and how they interact is key to creating effective behavior trees that can model complex decision-making processes. </p>
+									<div class="image main"><img src="images/ex2.png" alt="" /></div>
+									<p>Before we dive into defining the types of components(nodes), it's important to understand how Behavior Trees work. All nodes will always return an output to their parent, which is essentially an enum that will either be a success state if the task has been completed successfully, or a failure state if the assigned task has not been completed.</p>
+									<p>Although there are generally 5 types of nodes, I have made my own grouping and distribute them into 4 types at a conceptual level, which are: Action nodes, Condition nodes, Control nodes, and Decorator nodes.</p>
+								</header>
+								
+								<h3>Types of Components</h3>
+								<dl>
+									<dt>1.Action Components</dt>
+									<div class="image main"><img src="images/action.png" alt="" /></div>
+									<dd>
+										<p>An action component alters the state of the entity by performing an action, which corresponds to executing some game code. Examples of actions include moving the entity in the virtual world, changing the entity’s internal state, playing a sound, or executing some specialized logic such as path finding. If the action was completed successfully, then SUCCESS is returned. If the action was completed but not successfully, FAILURE is returned. An action component is represented by a box labelled with a statement describing the action.</p>
+										<br />
+										<br />
+									</dd>
+
+									<dt>2.Condition Components</dt>
+									<div class="image main"><img src="images/condition.png" alt="" /></div>
+									<dd>
+										<p>A condition component stores a Boolean question, i.e. a question that evaluates to either true or false. The Boolean question can be a test for proximity (‘‘Am I near the player?’’), a test on the entity’s state (‘‘Am I low on health?’’), etc. If the Boolean question evaluates to true, then SUCCESS is returned as the status code; otherwise, FAILURE is returned.</p>
+										<br />
+										<br />
+									</dd>
+
+									<dt>3.Control Flow Components</dt>
+									<p>A control flow component groups a set of child components together and specifies the order in which they should be executed. The behavior of a control flow component is determined by the status codes returned by its children.</p>
+									<div class="image left"><img src="images/selector.png" alt="" /></div>
+									<dd>
+										<p><b>Selector</b>: When executed, a selector processes its child components from left to right and immediately returns a SUCCESS code if one of its children returns a SUCCESS code. It returns a RUNNING code if one of its children returns a RUNNING code. If a child returns FAILURE, the selector continues and processes the next component. If each of the selector’s children returns a FAILURE code, then the selector returns a FAILURE code.</p>
+									</dd>
+									<div class="image left"><img src="images/sequence.png" alt="" /></div>
+									<dd>
+										<p><b>Sequence</b>: A sequence component controls flow by giving a sequence of components to execute. When executed, a sequence processes its child components from left to right and immediately returns a code if one of its children returns a FAILURE code. If a child returns SUCCESS, the sequence continues and processes the next component. If each of the sequence’s children returns a SUCCESS code, then the sequence returns a SUCCESS code. A sequence node is depicted as a box labelled with an arrow.</p>
+										<br />
+										<br />
+									</dd>
+
+									<dt>4.Decorator Components</dt>
+									<p>A decorator affects exactly one component and modifies its processing logic. A decorator is depicted as an icon in the top-left corner of the shape representing a node, as shown in the Figure. There are 4: Inverters, Succeders, Failers and Repeaters</p>
+									<div class="image main"><img src="images/wrappers.png" alt="" /></div>
+									<dd>
+										<p><b>Inverter</b>: An inverter is analogous to the NOT operator in a programming language. It negates the result of its wrapped component: SUCCESS becomes FAILURE, FAILURE becomes SUCCESS.</p>
+									</dd>
+									<dd>
+										<p><b>Succeders & Failers</b>: Succeeders and failers also modify their wrapped component’s return code: succeeders always return SUCCESS and failers always return FAILURE.</p>
+									</dd>
+									<dd>
+										<p><b>Repeater</b>: A repeater can also be used to execute a wrapped component behavior repeatedly via iteration. A basic repeater will process its wrapped component a specified number of times, regardless of whether the wrapped component returns SUCCESS or FAILURE. After the number of repetitions has been completed, it returns SUCCESS.</p>
+									</dd>
+
+									<dt>-My Own Components</dt>
+									<div class="image main"><img src="images/myowncomponents.png" alt="" /></div>
+									<dd>
+										<p><u><b>Random Uniform Distribution</b></u>: A Control Flow Node ode with multiple children, only one of which will be executed, and whose probability is the same as its siblings.</p>
+										<p><u><b>Random Weighted Distribution</b></u>: On the other hand, in Random Weighted Distribution (Control Flow Node aswell), each child will have a different probability, and like in Uniform Distribution, only one of them will be executed. For example: Hit (90) + Critical Hit (9) + Super Critical Hit (1), whereas in Uniform Distribution, all three would have the same probability.</p>
+										<p><u><b>Random Bernoulli Distribution(Decorator Node)</b></u>: A Bernoulli trial is an event that has only two possible outcomes (success or failure). For example, a coin landing on heads (success) or tails (failure). Therefore, this Decorator node, when applied to an action node, will determine whether the action node is executed or not, based on the probability we give it, which defaults to 50%. There are only two possible outcomes.</p>
+									</dd>
+									<div class="image left"><img src="images/switch.png" alt="" /></div>
+									<dd>
+										<p><u><b>Switch Condition Node</b></u>: The Switch Condition Node works similarly to a conditional, but in this case, it always has two children, the left and the right. If the boolean value is true, the left child will be executed, and if it is false, the right child will be executed.</p>
+										<br />
+										<br />
+									</dd>
+								</dl>
+								<a href="implementing.html" class="image fit"><img src="images/implementing.png" alt="" /></a>
+								<!--<a href="#" class="image main"><img src="images/pic01.jpg" alt="" /></a>-->
+								<ul class="actions special">
+									<li><a href="implementing.html" class="button large">Implementing of BH</a></li>
+								</ul>
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<form method="post" action="#">
+								<div class="fields">
+									<div class="field">
+										<label for="name">Name</label>
+										<input type="text" name="name" id="name" />
+									</div>
+									<div class="field">
+										<label for="email">Email</label>
+										<input type="text" name="email" id="email" />
+									</div>
+									<div class="field">
+										<label for="message">Message</label>
+										<textarea name="message" id="message" rows="3"></textarea>
+									</div>
+								</div>
+								<ul class="actions">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</form>
+						</section>
+						<section class="split contact">
+							<section>
+								<h3>Email</h3>
+								<p><a href="#">oriol.martin.corella@estudiantat.upc.edu</a></p>
+							</section>
+							<section>
+								<h3>Social</h3>
+								<ul class="icons alt">
+									<li><a href="https://github.com/Urii98" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+									<li><a href="https://github.com/Urii98/Uri-Behavior_Tree" class="icon brands alt fa-dribbble"><span class="label">Dribbble</span></a></li>
+								</ul>
+							</section>
+						</section>
+					</footer>
+
+				<!-- Copyright -->
+					<div id="copyright">
+						<ul><li>&copy; Uri</li><li>License: <a href="https://choosealicense.com/licenses/mit/">MIT</a></li></ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
