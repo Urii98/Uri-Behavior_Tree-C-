@@ -105,7 +105,7 @@ int main()
 	std::cout << "----------------------" << std::endl;
 	std::cout << "Exercise 1: " << std::endl;
 	//Exercise 1
-
+	//To Do 1: Create the behavior tree diagram 
 	//To Do 2: Identify the nodes from the diagram: 
 		//4 Action Nodes: 
 			//- Triple Stab
@@ -154,6 +154,7 @@ int main()
 
 	std::cout << "Exercise 2: " << std::endl;
 	//Exercise 1
+	//To Do 1: Create the behavior tree diagram 
 	//To Do 2: Identify the nodes from the diagram: 
 		//5 Action Nodes: 
 			//- Swing sword (15)
