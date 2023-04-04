@@ -22,6 +22,9 @@ To use the UriBehaviorTree class, simply include the "UriBehaviorTree.h" and "Ur
 
 ## Contribution
 
-Feel free to send pull requests or report issues in the repository's issues section. You can also contact me via email if you have any questions or suggestions. 
+Contributions to this class are welcome! If you find any errors or would like to add new features, you can submit a pull request on the GitHub repository. Please make sure to include a clear and detailed description of the changes you propose. You can also contact me via email if you have any questions or suggestions. 
 
 oriol.martin.corella@estudiantat.upc.edu
+
+## License
+This class is licensed under the MIT License. You can refer to the LICENSE file for more information.
