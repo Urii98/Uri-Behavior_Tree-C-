@@ -8,21 +8,6 @@
 #include <cassert>
 #include <numeric>
 
-//BehaviorTree
-//Action/Base  : Funciona
-//Condition  :Funciona
-//Control Flow:
-    //Selector : Funciona
-    //Sequence : Funciona
-    //RandomUniformDistribution : Funciona
-    //RandomWeightedDistribution : Funciona
-//Decorator:
-    //Inverter : Funciona
-    //Succeeder : Funciona
-    //Failer : Funciona
-    //Repeater : Funciona
-    //RandomBernoulliDistribution : Funciona
-
 enum class NodeStatus
 {
 	Default,
