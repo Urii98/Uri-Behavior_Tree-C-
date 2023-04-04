@@ -28,3 +28,6 @@ oriol.martin.corella@estudiantat.upc.edu
 
 ## License
 This class is licensed under the MIT License. You can refer to the LICENSE file for more information.
+
+## Website
+You can find more information about this class and its usage on the following website: https://urii98.github.io/Uri-Behavior_Tree/
