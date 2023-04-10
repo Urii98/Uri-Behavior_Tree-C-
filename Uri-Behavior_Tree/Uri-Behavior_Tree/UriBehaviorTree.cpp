@@ -229,7 +229,7 @@ NodeStatus RandomUniformDistribution::Run()
 // Create a discrete distribution with default weights
 RandomWeightedDistribution::RandomWeightedDistribution()
 {
-    // Initialize weights with 90% and 10% as default for the discrete_distribution to be initialized
+    // Initialize weights with 50% and 50% as default for the discrete_distribution to be initialized
     std::vector<float> weights; 
     weights.push_back(0.50);
     weights.push_back(0.50);

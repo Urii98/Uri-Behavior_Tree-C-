@@ -143,6 +143,7 @@ private:
 class RandomUniformDistribution : public BehaviorTreeNode
 {
 public:
+    //Constructor of the class, which takes the number of children that the node(distribution) will have as an argument.
     RandomUniformDistribution(int numChildren);
 
     virtual ~RandomUniformDistribution();
@@ -165,16 +166,18 @@ private:
 
 
 //RandomWeightedDistribution selects a child node to execute based on a weighted random distribution.
-//The user is required to provide a vector of weights that will be used to initialize the discrete distribution.
-//The sum of the weights will be checked to ensure it equals 1.0.Then, when children are added to the distribution, 
-//the weights will be added to the m_weights vector, but a new discrete distribution will not be created since the 
-//initialization was done in the constructor.
+//The user can either provide a vector of weights in the constructor or use the default constructor and add the weights
+//later when children are added to the distribution using the AddChild() function. The sum of the weights will be checked
+//to ensure it equals 1.0 when initializing the discrete distribution.
 class RandomWeightedDistribution : public BehaviorTreeNode
 {
 public:
     RandomWeightedDistribution();
     RandomWeightedDistribution(std::vector<float> weights);
     virtual ~RandomWeightedDistribution();
+
+    //This function adds a child node to the RandomWeightedDistribution node. It takes a shared pointer 
+    //to the child node as well as the weight of that child node in the distribution as arguments.
     void AddChild(std::shared_ptr<BehaviorTreeNode> child, float weight);
     bool IsEmpty() const;
     NodeStatus Run() override;
@@ -283,6 +286,7 @@ public:
 
     NodeStatus Run() override;
 
+    //This functions can modify the given probability on the constructor
     void SetProbability(float probability);
     float GetProbability() const;
 
