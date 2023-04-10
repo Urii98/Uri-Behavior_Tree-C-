@@ -141,7 +141,7 @@ int main()
 	//BehaviorTree tree;
 	auto tree = std::make_unique<BehaviorTree>(checkHealth);
 	tree->SetDebugEnabled(true);
-	tree->SetRoot(checkHealth);
+	
 
 	//To Do 6: Running our Behavior tree
 	tree->Run();
