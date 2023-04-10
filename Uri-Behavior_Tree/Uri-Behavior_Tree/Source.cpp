@@ -138,12 +138,13 @@ int main()
 	checkHealth->SetNodeName("checkHealth");
 
 	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
-	BehaviorTree tree;
-	tree.SetDebugEnabled(true);
-	tree.SetRoot(checkHealth);
+	//BehaviorTree tree;
+	auto tree = std::make_unique<BehaviorTree>(checkHealth);
+	tree->SetDebugEnabled(true);
+	tree->SetRoot(checkHealth);
 
 	//To Do 6: Running our Behavior tree
-	tree.Run();
+	tree->Run();
 	std::cout << "----------------------" << std::endl;
 
 	//------------------------------------------------------------------------------------------//
@@ -228,12 +229,11 @@ int main()
 	rootSelectorNode->SetNodeName("rootSelectorNode");
 
 	//To Do 5: Creating Behavior Tree Object with his root. And enabling Debug Mode.
-	BehaviorTree treeExercise2;
-	treeExercise2.SetDebugEnabled(true);
-	treeExercise2.SetRoot(rootSelectorNode);
+	auto treeExercise2 = std::make_unique<BehaviorTree>(rootSelectorNode);
+	treeExercise2->SetDebugEnabled(true);
 
 	//To Do 6: Running our Behavior tree
-	treeExercise2.Run();
+	treeExercise2->Run();
 
 
 	std::cout << "----------------------" << std::endl;
