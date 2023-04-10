@@ -143,6 +143,7 @@ private:
 class RandomUniformDistribution : public BehaviorTreeNode
 {
 public:
+    //Constructor of the class, which takes the number of children that the node(distribution) will have as an argument.
     RandomUniformDistribution(int numChildren);
 
     virtual ~RandomUniformDistribution();
