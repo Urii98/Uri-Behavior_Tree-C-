@@ -26,6 +26,9 @@ Contributions to this class are welcome! If you find any errors or would like to
 
 oriol.martin.corella@estudiantat.upc.edu
 
+## Author
+Oriol Martín Corella, a student of Video Game Design and Development at CITM(UPC).
+
 ## License
 This class is licensed under the MIT License. You can refer to the LICENSE file for more information.
 
