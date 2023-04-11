@@ -1,4 +1,4 @@
-# Urii-Behavior_Tree
+# Uri-Behavior_Tree
 
 The UriBehaviorTree class is an implementation of a Behavior Tree in C++. A Behavior Tree is a data structure that is used to model the behavior of an agent in a game, robot, or any autonomous system.
 
