@@ -8,7 +8,7 @@ To use the UriBehaviorTree class, simply include the "UriBehaviorTree.h" and "Ur
 
 ## Conventions for using the behavior tree class
 
-1.Create the behavior tree diagram.
+1.Create the behavior tree diagram and the action node classes.
 
 2.Identify all node types, and keep in mind which ones are action nodes versus control flow nodes and condition nodes.
 
